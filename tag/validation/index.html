@@ -1,0 +1,354 @@
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Validation - 42 and other answers</title>
+  <meta name="description" content="">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="shortcut icon" href="../../favicon.ico">
+
+  <link rel="stylesheet" type="text/css" href="../../assets/vendor/vendor.css?v=b865b432f0">
+  <link rel="stylesheet" type="text/css" href="../../assets/css/style.css?v=b865b432f0">
+  <link rel="stylesheet" type="text/css" href="../../assets/css/prism.css?v=b865b432f0">
+
+  <link rel="canonical" href="http://blog.prabugp.com/tag/validation/">
+    <meta name="referrer" content="origin">
+    
+    <meta property="og:site_name" content="42 and other answers">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Validation - 42 and other answers">
+    <meta property="og:url" content="http://blog.prabugp.com/tag/validation/">
+    
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Validation - 42 and other answers">
+    <meta name="twitter:url" content="http://blog.prabugp.com/tag/validation/">
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Series",
+    "publisher": "42 and other answers",
+    "url": "http://blog.prabugp.com/tag/validation/",
+    "name": "Validation"
+}
+    </script>
+
+    <script type="text/javascript" src="../../shared/ghost-url.js?v=b865b432f0"></script>
+<script type="text/javascript">
+ghost.init({
+	clientId: "ghost-frontend",
+	clientSecret: "fac06b293b65"
+});
+</script>
+    <meta name="generator" content="Ghost 0.7">
+    <link rel="alternate" type="application/rss+xml" title="42 and other answers" href="http://blog.prabugp.com/rss/">
+</head>
+<body class="tag-template tag-validation">
+  <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="http://blog.prabugp.com" style="padding: 15px 15px;">42 and other answers</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbar-menu">
+      <ul class="nav navbar-nav">
+          <li class="nav-home nav-item"><a href="http://blog.prabugp.com/" data-nav-slug="home">Home</a></li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <input type="text" class="form-control" placeholder="Search..." id="search-field">
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a class="subscribe-button" href="http://blog.prabugp.com/rss/"><i class="fa fa-rss"></i></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<a name="top"></a>
+
+
+  
+<header class="subheader">
+  <div class="container">
+    <h2 class="page-title">42 and other answers <small>Validation</small></h2>
+  </div>
+</header>
+
+<main id="content" class="container">
+  <div class="row">
+    <div class="col-md-9">
+        <article class="post post tag-spring-mvc tag-requestparam tag-validation tag-annotation tag-jsr-303 tag-hibernate tag-interceptor">
+    <header class="post-header">
+      <h2 class="post-title"><a href="../../2016/02/07/spring-mvc-requestparam-validation-annotation/">Spring MVC RequestParam Validation Annotation</a></h2>
+
+      <section class="post-meta text-muted">
+        <ul class="list-inline">
+          <li><i class="fa fa-calendar"></i> <time class="post-date" datetime="2016-02-07">07 February 2016</time></li>
+          <li>
+            <i class="fa fa-user"></i>
+
+            <a href="../../author/prabaharan/">Prabaharan Gopalan</a>
+
+          </li>
+
+          <li><i class="fa fa-folder-open"></i> <a href="../spring-mvc/">Spring MVC</a>, <a href="../requestparam/">RequestParam</a>, <a href="index.html">Validation</a>, <a href="../annotation/">Annotation</a>, <a href="../jsr-303/">JSR-303</a>, <a href="../hibernate/">Hibernate</a>, <a href="../interceptor/">Interceptor</a></li>
+        </ul>
+      </section>
+
+    </header>
+
+    <section class="post-content">
+      <p>We were building a normal enterprise application which involved a web UI and a mobile app. Naturally, we built not-so-Roy-Fielding REST API using Spring MVC (circumstantial decision - client knew Java 6 and Spring and we had to follow suit). This is a decently sized application with the number of APIs well into the double digits, most of them <code>GET</code>s.</p>
+
+<p>In every one of those GET controller methods we had to validate the request parameters. Most of the times, we had <code>@RequestParam</code> instead of <code>@PathVariable</code> because it's not just retrieving a resource, much like open ended queries. We started with Apache's <a href="https://commons.apache.org/proper/commons-lang/apidocs/org/apache/commons/lang3/StringUtils.html#isEmpty(java.lang.CharSequence)">StringUtils.isEmpty</a> to validate the request parameters. Soon enough, things started getting out of hand when we had to validate up to 4 parameters in several controllers and we also had to validate for the parameter length. </p>
+
+<p>BTW, Spring has this on the <a href="https://jira.spring.io/browse/SPR-6380">roadmap</a> for about 6+ years now. <br>
+<a href="http://stackoverflow.com/">StackOverflow</a> to the rescue! We found the following suggestions and let me say the issues I had with each one of them:</p>
+
+<p><a href="http://stackoverflow.com/a/6205027/2231632">Use a wrapper</a> - This means I had to write a POJO which wraps all the parameters and then use the <code>@ModelAttribute</code> which can then have <code>@NotNull</code> and related validations (provided you have a validator implementation in the classpath). </p>
+
+<p><strong>Problem</strong> - I don't want to create POJO's for each and every one of my <code>GET</code> methods. Moreover, if I have a single parameter, that needed validation (apart from the <code>required</code> flag), I'd still have to create a POJO. </p>
+
+<p><a href="http://www.leveluplunch.com/java/tutorials/017-validate-spring-rest-webservice-request/">Use Spring's Validator Interface</a> - Pretty much the same as above, but instead of leaving the validation to a library, you'll have finer control on error messages and custom validations. </p>
+
+<p><strong>Problem</strong> - Same as the above option. POJOs.</p>
+
+<p><a href="https://raymondhlee.wordpress.com/2015/08/29/validating-spring-mvc-request-mapping-method-parameters/">Use Spring's MethodValidationPostProcessor</a> - While this seemed the cleanest, being <a href="http://beanvalidation.org/1.0/spec/">JSR 303</a> compliant, it required a validation implementation like Hibernate (and we are not using Hibernate in our application). </p>
+
+<p>So we rolled up our own validation logic which was quick and worked well for us. Here is the crux:</p>
+
+<ul>
+<li>We created a custom annotation</li>
+</ul>
+
+<pre><code class="language-java">import java.lang.annotation.Documented;  
+import java.lang.annotation.ElementType;  
+import java.lang.annotation.Retention;  
+import java.lang.annotation.RetentionPolicy;  
+import java.lang.annotation.Target;
+
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+/**
+ * Annotation that will capture conditions that will validate an incoming request method parameter. 
+ * @author prabharangopalan
+ *
+ */
+public @interface ValidParam {
+
+    /**
+     * The minimum length of the required parameter. Works only {@link #empty()} is false. Defaults to 1.
+     * 
+     * @return
+     */
+    int min() default 1;
+
+    /**
+     * The maximum length of the required parameter. Works only {@link #empty()} is false. Defaults to 1000.
+     * 
+     * @return
+     */
+    int max() default 1000;
+
+    /**
+     * Whether the parameter's value can be empty/null. If set, this overrides the min/max settings. IOW, empty = {gfm-js-extract-pre-1} means
+     * min = 0 and max = 0 irrespective of what those are set to. &lt;br&gt;
+     * 
+     * Default is {gfm-js-extract-pre-2}
+     * 
+     * @return
+     */
+    boolean empty() default false;
+</code></pre>
+
+<ul>
+<li>We created an <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/mvc.html#mvc-handlermapping-interceptor">interceptor</a> that will process the request parameters before the controller is called. </li>
+</ul>
+
+<pre><code class="language-java">import javax.servlet.http.HttpServletRequest;  
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;  
+import org.apache.log4j.Logger;  
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;  
+import org.springframework.core.MethodParameter;  
+import org.springframework.core.ParameterNameDiscoverer;  
+import org.springframework.web.bind.annotation.RequestParam;  
+import org.springframework.web.method.HandlerMethod;  
+import org.springframework.web.servlet.ModelAndView;  
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.mckinsey.platform.util.ResponseUtil;  
+import com.mckinsey.platform.util.ValidParam;
+
+/**
+ * Validates incoming request parameters against the conditions set in {@link ValidParam} &lt;br&gt;
+ * For parameters to be validated, they must be annotated with @ValidParam
+ * 
+ * @author prabharangopalan
+ * 
+ */
+public class ParameterValidatorInterceptor extends HandlerInterceptorAdapter {
+
+    private Logger logger = Logger.getLogger(ParameterValidatorInterceptor.class);
+
+    private final ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (handler instanceof HandlerMethod &amp;&amp; areParametersValid((HandlerMethod) handler, request)) {
+            return true;
+        } else {
+            response = ResponseUtil.badRequestResponse(response, "one or more parameters is invalid");
+            return false;
+        }
+    }
+
+    /**
+     * Validates each parameter that are annotated with {@link ValidParam} annotation
+     * 
+     * @param handlerMethod
+     * @param request
+     * @return
+     */
+    private boolean areParametersValid(HandlerMethod handlerMethod, HttpServletRequest request) {
+        MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
+        for (MethodParameter param : methodParameters) {
+            param.initParameterNameDiscovery(this.parameterNameDiscoverer);
+            RequestParam requestParam = param.getParameterAnnotation(RequestParam.class);
+            ValidParam validationConstraint = param.getParameterAnnotation(ValidParam.class);
+            if (validationConstraint != null) {
+                // apply validations for only those params who have the 'ValidParam' annotation.
+                String paramName = requestParam.value();
+                logger.debug("validating the parameter " + paramName);
+                // cannot get the argument via reflection. so have to get it from the request itself.
+                String paramValueInRequest = request.getParameter(paramName);
+                int min = validationConstraint.min();
+                int max = validationConstraint.max();
+                boolean empty = validationConstraint.empty();
+                int valueLength = StringUtils.isEmpty(paramValueInRequest) ? 0 : paramValueInRequest.length();
+                // if the parameter can be empty, its length should 0
+                // otherwise, it should be betweeen min &amp; max lengths
+                if ((empty &amp;&amp; valueLength == 0) || (!empty &amp;&amp; valueLength &gt;= min &amp;&amp; valueLength &lt;= max)) {
+                    logger.debug("parameter " + paramName + " is valid");
+                    continue;
+                } else {
+                    logger.warn("parameter " + paramName + " is invalid " + " with value " + paramValueInRequest);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    }
+
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws java.lang.Exception{
+    }
+
+}
+</code></pre>
+
+<p><strong>NOTE</strong> the ResponseUtil is just a convenience class that sets the HTTP Status code to <code>400: Bad Request</code>. </p>
+
+<ul>
+<li>We wired the interceptor to the servlet configuration:</li>
+</ul>
+
+<pre><code class="language-java"> @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+     registry.addInterceptor(parameterValidatorInterceptor()).addPathPatterns("/**").excludePathPatterns("/login");
+    }
+</code></pre>
+
+<ul>
+<li>Finally, configure our controllers to use the new annotation like so:</li>
+</ul>
+
+<pre><code class="language-java">public Map&lt;String, Object&gt; getAllXXX@RequestParam(value = "startTime") @ValidParam(max = 24, min = 24, empty = false) String startTime){  
+// more code here
+}
+</code></pre>
+
+<p>While this takes care of validating <code>@ReqeustParam</code> the same can be extended for <code>@PathVariable</code> as well relatively easily. If you need a full blow validation framework, I'd still suggest using JSR-303 compliant validation processors like <a href="https://docs.jboss.org/hibernate/validator/4.0.1/reference/en/pdf/hibernate_reference.pdf">Hibernate</a> because you can validate any method parameter and you get preconfigured validations like <code>@Email</code>, <code>@Range</code>, <code>@Digits</code>, <code>@Future</code>, <code>@Past</code>, etc. </p>
+    </section>
+
+  </article>
+
+<section class="pagination" style="display: block; width: 100%;">
+
+</section>
+
+    </div>
+    <div class="col-md-3">
+      <nav class="menu tags">
+  <a class="menu-item" href="../../" data-slug="all">All posts</a>
+    <a class="menu-item tag" href="../spring-mvc/" data-slug="spring-mvc">Spring MVC</a>
+    <a class="menu-item tag" href="../requestparam/" data-slug="requestparam">RequestParam</a>
+    <a class="menu-item tag" href="index.html" data-slug="validation">Validation</a>
+    <a class="menu-item tag" href="../annotation/" data-slug="annotation">Annotation</a>
+    <a class="menu-item tag" href="../jsr-303/" data-slug="jsr-303">JSR-303</a>
+    <a class="menu-item tag" href="../hibernate/" data-slug="hibernate">Hibernate</a>
+    <a class="menu-item tag" href="../interceptor/" data-slug="interceptor">Interceptor</a>
+</nav>
+    </div>
+  </div>
+</main>
+
+
+  <div class="modal fade" tabindex="-1" role="dialog" id="search-results-container">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">Search results</h4>
+        </div>
+        <div class="modal-body">
+          Searched for <strong id="search-term"></strong>
+          <hr>
+          <section id="loading-spinner" class="text-center"><i class="fa fa-spinner fa-spin fa-2x"></i></section>
+          <section id="search-results" class="search-results"></section>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer clearfix container text-muted">
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <a href="index.html#top" data-scroll="true">
+          <i class="fa fa-arrow-up"></i> Back to top
+        </a>
+      </div>
+      <div class="col-md-6 text-right">
+        <p><strong>42 and other answers</strong> © 2016</p>
+        <p><small>Theme by <a href="http://nehalist.io" target="_blank">nehalist.io</a></small></p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="text/javascript" src="../../assets/vendor/vendor.js?v=b865b432f0"></script>
+  <script type="text/javascript" src="../../assets/js/prism.js?v=b865b432f0"></script>
+
+  
+
+  <script type="text/javascript" src="../../assets/js/index.js?v=b865b432f0"></script>
+
+</body>
